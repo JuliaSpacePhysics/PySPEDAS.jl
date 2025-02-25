@@ -6,6 +6,8 @@ export pyspedas
 export mms, themis
 export tplot
 
+const TnamesType = Union{AbstractArray,Tuple}
+
 const pyspedas = PythonCall.pynew()
 const mms = PythonCall.pynew()
 const themis = PythonCall.pynew()
@@ -17,6 +19,7 @@ function __init__()
 end
 
 tplot(args...) = @pyconst(pyspedas.tplot)(args...)
+tplot(tnames::TnamesType, args...) = @pyconst(pyspedas.tplot)(pylist(tnames), args...)
 
 """Load and plot THEMIS FGM data"""
 function themis_demo(; trange=["2007-03-23", "2007-03-24"])
