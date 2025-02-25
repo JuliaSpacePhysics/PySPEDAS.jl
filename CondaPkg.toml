@@ -1,2 +1,5 @@
+[deps]
+NetCDF4 = ""
+
 [pip.deps]
 pyspedas = "@git+https://github.com/spedas/pyspedas"
