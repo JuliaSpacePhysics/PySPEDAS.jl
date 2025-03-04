@@ -1,10 +1,15 @@
 module PySPEDAS
 
 using PythonCall
+using DimensionalData
+using Dates
+import DimensionalData.Lookups: NoLookup
 
 export pyspedas
 export mms, themis
 export tplot
+
+include("utils.jl")
 
 const TnamesType = Union{AbstractArray,Tuple}
 
@@ -20,6 +25,16 @@ end
 
 tplot(args...) = @pyconst(pyspedas.tplot)(args...)
 tplot(tnames::TnamesType, args...) = @pyconst(pyspedas.tplot)(pylist(tnames), args...)
+
+"""
+    get_data(name)
+
+Convert a tplot variable `name` from Python to a `DimensionalData.DataArray` in Julia.
+"""
+function get_data(name; transpose=false)
+    x = pyspedas.get_data(name; xarray=true)
+    pyconvert_dataarray(x; transpose)
+end
 
 """Load and plot THEMIS FGM data"""
 function themis_demo(; trange=["2007-03-23", "2007-03-24"])
