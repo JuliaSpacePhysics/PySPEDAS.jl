@@ -6,21 +6,27 @@ using Dates
 import DimensionalData.Lookups: NoLookup
 
 export pyspedas
-export mms, themis
-export tplot
+export tplot, get_data
 
 include("utils.jl")
+include("projects.jl")
+
+using .Projects
 
 const TnamesType = Union{AbstractArray,Tuple}
 
 const pyspedas = PythonCall.pynew()
-const mms = PythonCall.pynew()
-const themis = PythonCall.pynew()
 
 function __init__()
     PythonCall.pycopy!(pyspedas, pyimport("pyspedas"))
-    PythonCall.pycopy!(mms, pyimport("pyspedas.projects.mms"))
-    PythonCall.pycopy!(themis, pyimport("pyspedas.projects.themis"))
+    for p in Projects.PROJECTS
+        try
+            project = @eval Projects.$p
+            PythonCall.pycopy!(project, pyimport("pyspedas.projects.$p"))
+        catch e
+            @warn "Failed to load project $p: $e"
+        end
+    end
 end
 
 tplot(args...) = @pyconst(pyspedas.tplot)(args...)
@@ -34,16 +40,6 @@ Convert a tplot variable `name` from Python to a `DimensionalData.DataArray` in 
 function get_data(name; transpose=false)
     x = pyspedas.get_data(name; xarray=true)
     pyconvert_dataarray(x; transpose)
-end
-
-"""Load and plot THEMIS FGM data"""
-function themis_demo(; trange=["2007-03-23", "2007-03-24"])
-    # Load THEMIS FGM data for probe A
-    fgm_vars = themis.fgm(probe='a', trange=trange)
-    # Print the list of tplot variables just loaded
-    println(fgm_vars)
-    # Plot the 'tha_fgl_dsl' variable
-    tplot("tha_fgl_dsl")
 end
 
 function demo(; trange=["2020-04-20/06:00", "2020-04-20/08:00"])
