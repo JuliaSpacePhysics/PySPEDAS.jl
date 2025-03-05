@@ -1,32 +1,55 @@
-"""
-    Project
+abstract type Module end
 
-Represents a SPEDAS project with a Python module reference.
-"""
-struct Project
+function attributes end
+
+Base.propertynames(p::Module) = attributes(p)
+
+struct Project <: Module
     name::Symbol
-    pymodule::PythonCall.Py
+    py::Py
+    attributes::Ref{Vector{Symbol}}
+end
 
-    function Project(name::Symbol)
-        new(name, PythonCall.pynew())
-    end
+Project(name) = Project(name, pynew(), Ref{Vector{Symbol}}())
+
+# This somehow could prevent the Segmentation fault, see also https://github.com/JuliaPy/PythonCall.jl/issues/586
+attributes(p::Project) = p.attributes[]
+
+struct TplotVariable
+    name::Symbol
+    py::Py
+end
+
+TplotVariable(name) = TplotVariable(Symbol(name), pytplot.data_quants[String(name)])
+
+function DimensionalData.DimArray(var::TplotVariable; kwargs...)
+    pyconvert_dataarray(var.py; kwargs...)
 end
 
 struct LoadFunction
     py::Py
 end
 
-(f::LoadFunction)(args...; kwargs...) = f.py(args...; kwargs...)
-
+function (f::LoadFunction)(args...; kwargs...)
+    tvars_py = f.py(args...; kwargs...)
+    tvars = pyconvert(Vector{Symbol}, tvars_py)
+    NamedTuple{tuple(tvars...)}(TplotVariable.(tvars))
+end
 
 # Allow calling methods on the Python module
 function Base.getproperty(p::Project, s::Symbol)
     if s in fieldnames(Project)
         return getfield(p, s)
     else
-        return LoadFunction(getproperty(getfield(p, :pymodule), s))
+        attr = getproperty(getfield(p, :py), s)
+        return pycallable(attr) ? LoadFunction(attr) : attr
     end
 end
 
 # Show the project name
 Base.show(io::IO, p::Project) = print(io, "SPEDAS Project: $(p.name)")
+Base.show(io::IO, var::TplotVariable) = print(io, var.py.data)
+function Base.show(io::IO, m::MIME"text/plain", var::TplotVariable)
+    println(io, "Tplot Variable: $(var.name)")
+    show(io, m, var.py)
+end

@@ -2,12 +2,6 @@
 # https://github.com/spedas/pyspedas/blob/master/pyspedas/projects/__init__.py
 const PROJECTS = [:ace, :akebono, :barrel, :cluster, :cnofs, :csswe, :de2, :dscovr, :elfin, :equator_s, :erg, :fast, :geotail, :goes, :image, :kompsat, :kyoto, :lanl, :maven, :mica, :mms, :noaa, :omni, :poes, :polar, :psp, :rbsp, :secs, :soho, :solo, :st5, :stereo, :swarm, :themis, :twins, :ulysses, :wind]
 
-# Create Project instances for each project
-for p in PROJECTS
-    @eval const $p = Project($(QuoteNode(p)))
-end
-
-
 is_public_attribute(name) = !startswith(string(name), "__")
 
 """
@@ -22,7 +16,7 @@ module Projects
 using ..PySPEDAS
 using ..PySPEDAS: PROJECTS
 for p in PROJECTS
-    @eval $p = PySPEDAS.$p
+    @eval const $p = Project($(QuoteNode(p)))
     @eval export $p
 end
 end
