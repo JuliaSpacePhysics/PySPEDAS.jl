@@ -30,3 +30,5 @@ trange=["2020-04-20/06:00", "2020-04-20/08:00"]
 # Then you can use them directly
 mms.fgm(trange, time_clip=true, probe=2)
 ```
+
+Each mission is represented as a `Project` type, which wraps the underlying Python module.

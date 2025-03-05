@@ -7,7 +7,9 @@ import DimensionalData.Lookups: NoLookup
 
 export pyspedas
 export tplot, get_data
+export Project
 
+include("types.jl")
 include("utils.jl")
 include("projects.jl")
 
@@ -19,12 +21,12 @@ const pyspedas = PythonCall.pynew()
 
 function __init__()
     PythonCall.pycopy!(pyspedas, pyimport("pyspedas"))
-    for p in Projects.PROJECTS
+    for p in PROJECTS
         try
-            project = @eval Projects.$p
-            PythonCall.pycopy!(project, pyimport("pyspedas.projects.$p"))
+            project = @eval $p
+            PythonCall.pycopy!(project.pymodule, pyimport("pyspedas.projects.$(p)"))
         catch e
-            @warn "Failed to load project $p: $e"
+            @warn "Failed to load project $(p): $e"
         end
     end
 end
