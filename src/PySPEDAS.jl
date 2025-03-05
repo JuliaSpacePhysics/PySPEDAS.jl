@@ -2,10 +2,7 @@ module PySPEDAS
 
 using PythonCall
 using PythonCall: pynew
-using DimensionalData
 using Dates
-import DimensionalData: DimArray
-import DimensionalData.Lookups: NoLookup
 
 export pyspedas, pytplot
 export tplot, get_data
@@ -14,6 +11,7 @@ export Project, TplotVariable
 include("types.jl")
 include("utils.jl")
 include("projects.jl")
+include("DimensionalData.jl")
 
 using .Projects
 

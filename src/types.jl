@@ -22,10 +22,6 @@ end
 
 TplotVariable(name) = TplotVariable(Symbol(name), pytplot.data_quants[String(name)])
 
-function DimensionalData.DimArray(var::TplotVariable; kwargs...)
-    pyconvert_dataarray(var.py; kwargs...)
-end
-
 struct LoadFunction
     py::Py
 end
