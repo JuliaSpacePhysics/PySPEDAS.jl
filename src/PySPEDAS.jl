@@ -37,7 +37,30 @@ end
 tplot(args...) = @pyconst(pyspedas.tplot)(args...)
 tplot(tnames::TnamesType, args...) = @pyconst(pyspedas.tplot)(pylist(tnames), args...)
 
+"""
+    get_data(name; xarray=true, kwargs...)
+
+Retrieve data from a tplot variable by `name`.
+
+By default, returns an xarray DataArray object. If `xarray` is set to false, returns a tuple of (times, data).
+"""
 get_data(name; xarray=true, kwargs...) = pyspedas.get_data(name; xarray, kwargs...)
+
+"""
+    get_data(::Type{DimArray}, name; kwargs...)
+
+Retrieve data from a tplot variable and convert it to a `DimensionalData.DimArray.
+"""
+get_data(::Type{DimArray}, name; kwargs...) = pyconvert_dataarray(get_data(name; kwargs...))
+
+"""
+    get_data(::Type{T<:AbstractDimStack}, names; kwargs...)
+
+Retrieve multiple tplot variables and combine them into a DimensionalData stack.
+"""
+function get_data(::Type{T}, names; kwargs...) where {T<:AbstractDimStack}
+    T(pyconvert_dataarray.(get_data.(names; kwargs...)))
+end
 
 function demo(; trange=["2020-04-20/06:00", "2020-04-20/08:00"])
     pyspedas.projects.solo.mag(; trange, time_clip=true)
