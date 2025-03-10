@@ -35,7 +35,7 @@ function pyconvert_dataarray(x; transpose=false)
     end
 
     lookups = NamedTuple{dim_names}(lookups_values)
-    metadata = pyconvert(Dict, x.attrs)
+    metadata = pyconvert(Dict{Any,Any}, x.attrs)
     array_name = pyis(x.name, pybuiltins.None) ? nothing : string(x.name)
 
     return DimArray(data, lookups; name=array_name, metadata)
