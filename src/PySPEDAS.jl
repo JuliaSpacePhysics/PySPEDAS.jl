@@ -3,6 +3,9 @@ module PySPEDAS
 using PythonCall
 using PythonCall: pynew
 using Dates
+using SpaceDataModel
+using SpaceDataModel: AbstractDataVariable
+import SpaceDataModel: times
 
 export pyspedas, pytplot
 export tplot, get_data

@@ -15,12 +15,19 @@ Project(name) = Project(name, pynew(), Ref{Vector{Symbol}}())
 # This somehow could prevent the Segmentation fault, see also https://github.com/JuliaPy/PythonCall.jl/issues/586
 attributes(p::Project) = p.attributes[]
 
-struct TplotVariable
+struct TplotVariable{T,N} <: AbstractDataVariable{T,N}
     name::Symbol
+    data::PyArray{T,N}
     py::Py
 end
 
-TplotVariable(name) = TplotVariable(Symbol(name), pytplot.data_quants[String(name)])
+function TplotVariable(name)
+    py = pytplot.data_quants[String(name)]
+    data = PyArray(py.data; copy=false)
+    TplotVariable(Symbol(name), data, py)
+end
+
+SpaceDataModel.times(var::TplotVariable) = pyconvert_time(var.py.time.data)
 
 struct LoadFunction
     py::Py
