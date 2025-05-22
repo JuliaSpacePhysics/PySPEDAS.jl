@@ -16,19 +16,16 @@ Convert a `xarray.DataArray` to a `DimensionalData.DataArray`.
 """
 function pyconvert_dataarray(x; transpose=false)
     data_npy = transpose ? x.data.T : x.data
-    data_type = dtype2type(string(data_npy.dtype.name))
-    data_ndim = pyconvert(Int, data_npy.ndim)
-    data = pyconvert(Array{data_type,data_ndim}, data_npy)
+    data = PyArray(data_npy; copy=false)
 
     dim_names = tuple(Symbol.(collect(x.dims))...)
     dim_names = transpose ? reverse(dim_names) : dim_names
     coord_names = Symbol.(collect(x.coords.keys()))
     lookups_values = map(dim_names) do dim
         if dim in coord_names
-            coord = getproperty(x, dim).data
-            coord_type = dtype2type(string(coord.dtype.name))
-            coord_ndim = pyconvert(Int, coord.ndim)
-            coord_type == DateTime ? pyconvert_time(coord) : pyconvert(Array{coord_type,coord_ndim}, coord)
+            coord_py = getproperty(x, dim).data
+            coord_type = string(coord_py.dtype.name)
+            coord_type == "datetime64[ns]" ? pyconvert_time(coord_py) : PyArray(coord_py; copy=false)
         else
             NoLookup()
         end

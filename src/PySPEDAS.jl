@@ -19,10 +19,12 @@ const TnamesType = Union{AbstractArray,Tuple}
 
 const pyspedas = pynew()
 const pytplot = pynew()
+const pyns = pynew()
 
 function __init__()
     PythonCall.pycopy!(pyspedas, pyimport("pyspedas"))
     PythonCall.pycopy!(pytplot, pyimport("pytplot"))
+    PythonCall.pycopy!(pyns, pyimport("numpy").timedelta64(1, "ns"))
     for p in PROJECTS
         try
             project = @eval $p
@@ -60,6 +62,11 @@ Retrieve multiple tplot variables and combine them into a DimensionalData stack.
 """
 function get_data(::Type{T}, names; kwargs...) where {T<:AbstractDimStack}
     T(pyconvert_dataarray.(get_data.(names; kwargs...)))
+end
+
+function demo_get_data(; trange=["2020-04-20/06:00", "2020-04-20/08:00"])
+    pyspedas.projects.themis.fgm(; trange, time_clip=true, probe='d')
+    get_data(DimArray, "thd_fgs_gsm")
 end
 
 function demo(; trange=["2020-04-20/06:00", "2020-04-20/08:00"])
