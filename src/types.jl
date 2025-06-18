@@ -15,16 +15,16 @@ Project(name) = Project(name, pynew(), Ref{Vector{Symbol}}())
 # This somehow could prevent the Segmentation fault, see also https://github.com/JuliaPy/PythonCall.jl/issues/586
 attributes(p::Project) = p.attributes[]
 
-struct TplotVariable{T,N} <: AbstractDataVariable{T,N}
+struct TplotVariable{T, N} <: AbstractDataVariable{T, N}
     name::Symbol
-    data::PyArray{T,N}
+    data::PyArray{T, N}
     py::Py
 end
 
 function TplotVariable(name)
-    py = pytplot.data_quants[String(name)]
-    data = PyArray(py.data; copy=false)
-    TplotVariable(Symbol(name), data, py)
+    py = @pyconst(pyimport("pytplot").data_quants)[String(name)]
+    data = PyArray(py.data; copy = false)
+    return TplotVariable(Symbol(name), data, py)
 end
 
 SpaceDataModel.times(var::TplotVariable) = pyconvert_time(var.py.time.data)
@@ -36,7 +36,7 @@ end
 function (f::LoadFunction)(args...; kwargs...)
     tvars_py = f.py(args...; kwargs...)
     tvars = pyconvert(Vector{Symbol}, tvars_py)
-    NamedTuple{tuple(tvars...)}(TplotVariable.(tvars))
+    return NamedTuple{tuple(tvars...)}(TplotVariable.(tvars))
 end
 
 # Allow calling methods on the Python module
@@ -54,5 +54,5 @@ Base.show(io::IO, p::Project) = print(io, "SPEDAS Project: $(p.name)")
 Base.show(io::IO, var::TplotVariable) = print(io, var.py.data)
 function Base.show(io::IO, m::MIME"text/plain", var::TplotVariable)
     println(io, "Tplot Variable: $(var.name)")
-    show(io, m, var.py)
+    return show(io, m, var.py)
 end
