@@ -18,14 +18,19 @@ Load and plot THEMIS FGM data.
 
 ```julia
 using PySPEDAS
+using DimensionalData
 
 trange=["2007-03-23", "2007-03-24"]
 # Load THEMIS FGM data for probe A
 fgm_vars = pyspedas.projects.themis.fgm(probe='a', trange=trange)
 # Print the list of tplot variables just loaded
 println(fgm_vars)
-# Plot the 'tha_fgl_dsl' variable
-tplot("tha_fgl_dsl")
+
+# Retrieve the 'tha_fgl_dsl' variable as a `DimArray` similar to `xarray`
+get_data(DimArray, "tha_fgl_dsl")
+
+# Plot the 'tha_fgl_dsl' variable using PySPEDAS's `tplot` function (`matplotlib`)
+pytplot("tha_fgl_dsl")
 ```
 
 You can load projects into scope for quick access:
@@ -40,4 +45,5 @@ mms.fgm(trange, time_clip=true, probe=2)
 
 Each mission is represented as a `Project` type, which wraps the underlying Python module.
 
-> [!NOTE] > [SPEDAS.jl](https://github.com/Beforerr/SPEDAS.jl) provides a native Julia counterpart with cross-language validation and comparison. See [SPEDAS.jl Documentation](https://beforerr.github.io/SPEDAS.jl/dev/validation/pyspedas/) for more details.
+> [!NOTE]
+> [SPEDAS.jl](https://github.com/Beforerr/SPEDAS.jl) provides a native Julia counterpart with cross-language validation and comparison. See [SPEDAS.jl Documentation](https://beforerr.github.io/SPEDAS.jl/dev/validation/pyspedas/) for more details.
