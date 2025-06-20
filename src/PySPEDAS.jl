@@ -1,5 +1,6 @@
 module PySPEDAS
 
+using NetCDF_jll
 using PythonCall
 using PythonCall: pynew
 using Dates
