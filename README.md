@@ -1,6 +1,6 @@
 # PySPEDAS.jl
 
-[![Build Status](https://github.com/Beforerr/PySPEDAS.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/Beforerr/PySPEDAS.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![Build Status](https://github.com/JuliaSpacePhysics/PySPEDAS.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/JuliaSpacePhysics/PySPEDAS.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![Aqua QA](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
 
 A Julia wrapper around [PySPEDAS](https://github.com/spedas/pyspedas): Python-based Space Physics Environment Data Analysis Software.
@@ -46,4 +46,4 @@ mms.fgm(trange, time_clip=true, probe=2)
 Each mission is represented as a `Project` type, which wraps the underlying Python module.
 
 > [!NOTE]
-> [SPEDAS.jl](https://github.com/Beforerr/SPEDAS.jl) provides a native Julia counterpart with cross-language validation and comparison. See [SPEDAS.jl Documentation](https://beforerr.github.io/SPEDAS.jl/dev/validation/pyspedas/) for more details.
+> [SPEDAS.jl](https://github.com/JuliaSpacePhysics/SPEDAS.jl) provides a native Julia counterpart with cross-language validation and comparison. See [SPEDAS.jl Documentation](https://juliaspacephysics.github.io/SPEDAS.jl/dev/validation/pyspedas/) for more details.
