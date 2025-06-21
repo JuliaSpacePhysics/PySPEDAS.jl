@@ -18,3 +18,15 @@ function pyconvert_time(time)
     dt_f = PyArray((time - pyt0) / pyns; copy=false)
     return t0 .+ dt_f .* dt_min
 end
+
+"""
+    promote_cdf_attributes!(meta)
+
+Promotes the nested CDF variable attributes to the top level of the metadata.
+"""
+function promote_cdf_attributes!(meta)
+    cdf_attrs = meta["CDF"]["VATT"]
+    for (k, v) in cdf_attrs
+        meta[k] = v
+    end
+end
