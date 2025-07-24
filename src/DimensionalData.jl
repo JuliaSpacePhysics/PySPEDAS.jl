@@ -2,19 +2,22 @@ using DimensionalData
 import DimensionalData: DimArray, dims
 import DimensionalData.Lookups: NoLookup
 
+is_datetime64_ns(py) = string(py.dtype.name) == "datetime64[ns]"
+
 function get_xarray_dims(x; transpose = false)
     dim_names = tuple(Symbol.(collect(x.dims))...)
     dim_names = transpose ? reverse(dim_names) : dim_names
     coord_names = Symbol.(collect(x.coords.keys()))
     lookups_values = map(dim_names) do dim
-        if dim in coord_names
+        lookup = if dim in coord_names
             coord_py = getproperty(x, dim).data
-            coord_type = string(coord_py.dtype.name)
-            coord = coord_type == "datetime64[ns]" ? pyconvert_time(coord_py) : PyArray(coord_py; copy = false)
-            Dim{dim}(coord)
+            is_datetime64_ns(coord_py) ? pyconvert_time(coord_py) : PyArray(coord_py; copy = false)
+        elseif dim == :v_dim && hasproperty(x, :v)
+            PyArray(x.v.data; copy = false)
         else
-            Dim{dim}(NoLookup())
+            NoLookup()
         end
+        Dim{dim}(lookup)
     end
     return lookups_values
 end
