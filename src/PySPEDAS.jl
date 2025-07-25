@@ -27,15 +27,6 @@ const pyns = pynew()
 function __init__()
     PythonCall.pycopy!(pyspedas, pyimport("pyspedas"))
     PythonCall.pycopy!(pyns, pyimport("numpy").timedelta64(1, "ns"))
-    for p in PROJECTS
-        try
-            project = @eval $p
-            PythonCall.pycopy!(project.py, pyimport("pyspedas.projects.$(p)"))
-            project.attributes[] = filter(is_public_attribute, propertynames(project.py))
-        catch e
-            @warn "Failed to load project $(p): $e"
-        end
-    end
     return
 end
 
