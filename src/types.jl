@@ -22,7 +22,7 @@ struct TplotVariable{T, N} <: AbstractDataVariable{T, N}
 end
 
 function TplotVariable(name)
-    py = @pyconst(pyimport("pytplot").data_quants)[String(name)]
+    py = data_quants[String(name)]
     data = PyArray(py.data; copy = false)
     return TplotVariable(Symbol(name), data, py)
 end

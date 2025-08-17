@@ -23,10 +23,17 @@ const TnamesType = Union{AbstractArray, Tuple}
 
 const pyspedas = pynew()
 const pyns = pynew()
+const data_quants = pynew()
 
 function __init__()
     PythonCall.pycopy!(pyspedas, pyimport("pyspedas"))
     PythonCall.pycopy!(pyns, pyimport("numpy").timedelta64(1, "ns"))
+    try
+        PythonCall.pycopy!(data_quants, pyimport("pyspedas.tplot_tools").data_quants)
+    catch
+        # for older versions
+        PythonCall.pycopy!(data_quants, pyimport("pytplot").data_quants)
+    end
     return
 end
 
