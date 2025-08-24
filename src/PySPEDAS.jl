@@ -34,7 +34,23 @@ function __init__()
         # for older versions
         PythonCall.pycopy!(data_quants, pyimport("pytplot").data_quants)
     end
+
+    _init_projects()
     return
+end
+
+function _init_projects()
+    for p in PROJECTS
+        try
+            pym = pyimport("pyspedas.projects.$(p)")
+            # Get the project instance from the Projects module
+            project = getproperty(Projects, p)
+            PythonCall.pycopy!(project.py, pym)
+            project.attributes[] = filter(is_public_attribute, propertynames(project.py))
+        catch e
+            @warn "Failed to load project $(p): $e"
+        end
+    end
 end
 
 pytplot(args...) = @pyconst(pyspedas.tplot)(args...)

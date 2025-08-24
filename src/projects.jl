@@ -13,24 +13,9 @@ end
 
 # Handful module for exporting projects
 module Projects
-using PythonCall
-using ..PySPEDAS
-using ..PySPEDAS: PROJECTS, is_public_attribute
+using ..PySPEDAS: PROJECTS, Project
 for p in PROJECTS
     @eval const $p = Project($(QuoteNode(p)))
     @eval export $p
-end
-
-function __init__()
-    for p in PROJECTS
-        try
-            pym = pyimport("pyspedas.projects.$(p)")
-            @eval PythonCall.pycopy!($p.py, $pym)
-            @eval $p.attributes[] = filter(is_public_attribute, propertynames($p.py))
-        catch e
-            @warn "Failed to load project $(p): $e"
-        end
-    end
-    return
 end
 end
