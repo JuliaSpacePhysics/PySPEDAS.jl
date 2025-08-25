@@ -1,7 +1,7 @@
 name = "PySPEDAS"
 uuid = "668d2cef-03a7-4c36-a521-7d1c6ddc8846"
 authors = ["Beforerr <zzj956959688@gmail.com> and contributors"]
-version = "0.1.4"
+version = "0.1.5"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
