@@ -18,13 +18,15 @@ attributes(p::Project) = p.attributes[]
 struct TplotVariable{T, N} <: AbstractDataVariable{T, N}
     name::Symbol
     data::PyArray{T, N}
+    metadata::Dict{Any, Any}
     py::Py
 end
 
 function TplotVariable(name)
     py = data_quants[String(name)]
     data = PyArray(py.data; copy = false)
-    return TplotVariable(Symbol(name), data, py)
+    metadata = pyconvert(Dict{Any, Any}, py.attrs)
+    return TplotVariable(Symbol(name), data, metadata, py)
 end
 
 SpaceDataModel.times(var::TplotVariable) = pyconvert_time(var.py.time.data)
@@ -35,8 +37,8 @@ end
 
 function (f::LoadFunction)(args...; kwargs...)
     tvars_py = f.py(args...; kwargs...)
-    tvars = pyconvert(Vector{Symbol}, tvars_py)
-    return NamedTuple{tuple(tvars...)}(TplotVariable.(tvars))
+    tvars = Tuple(pyconvert(Vector{Symbol}, tvars_py))
+    return NamedTuple{tvars}(TplotVariable.(tvars))
 end
 
 # Allow calling methods on the Python module

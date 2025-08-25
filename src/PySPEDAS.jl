@@ -51,23 +51,22 @@ function _init_projects()
             @warn "Failed to load project $(p): $e"
         end
     end
+    return
 end
 
 pytplot(args...) = @pyconst(pyspedas.tplot)(args...)
 pytplot(tnames::TnamesType, args...) = @pyconst(pyspedas.tplot)(pylist(tnames), args...)
 
 """
-    get_data(name; xarray=true, kwargs...)
+    get_data(name)::TplotVariable
 
-Retrieve data from a tplot variable by `name`.
-
-By default, returns an xarray DataArray object. If `xarray` is set to false, returns a tuple of (times, data).
+Retrieve data from `pyspedas` by `name`.
 """
-get_data(name; xarray = true, kwargs...) = pyspedas.get_data(name; xarray, kwargs...)
+get_data(name) = TplotVariable(name)
 
 function demo_get_data(; trange = ["2017-03-23/00:00:00", "2017-04-23/23:59:59"])
     pyspedas.projects.omni.data(; trange)
-    return get_data(DimArray, "SYM_H")
+    return DimArray(get_data("SYM_H"))
 end
 
 function demo(; trange = ["2020-04-20/06:00", "2020-04-20/08:00"])
