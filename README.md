@@ -26,8 +26,8 @@ fgm_vars = pyspedas.projects.themis.fgm(probe='a', trange=trange)
 # Print the list of tplot variables just loaded
 println(fgm_vars)
 
-# Retrieve the 'tha_fgl_dsl' variable as a `DimArray` similar to `xarray`
-get_data(DimArray, "tha_fgl_dsl")
+# Retrieve the 'tha_fgl_dsl' variable
+get_data("tha_fgl_dsl")
 
 # Plot the 'tha_fgl_dsl' variable using PySPEDAS's `tplot` function (`matplotlib`)
 pytplot("tha_fgl_dsl")
