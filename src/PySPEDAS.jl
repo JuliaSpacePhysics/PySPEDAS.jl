@@ -3,10 +3,10 @@ module PySPEDAS
 using NetCDF_jll
 using PythonCall
 using PythonCall: pynew
-using Dates
 using SpaceDataModel
 using SpaceDataModel: AbstractDataVariable
 import SpaceDataModel: times
+using UnixTimes: UnixTime
 
 export pyspedas
 export pytplot, get_data
@@ -24,8 +24,10 @@ const TnamesType = Union{AbstractArray, Tuple}
 const pyspedas = pynew()
 const pyns = pynew()
 const data_quants = pynew()
+const np = pynew()
 
 function __init__()
+    PythonCall.pycopy!(np, pyimport("numpy"))
     PythonCall.pycopy!(pyspedas, pyimport("pyspedas"))
     PythonCall.pycopy!(pyns, pyimport("numpy").timedelta64(1, "ns"))
     try
@@ -64,7 +66,7 @@ Retrieve data from `pyspedas` by `name`.
 """
 get_data(name) = TplotVariable(name)
 
-function demo_get_data(; trange = ["2017-03-23/00:00:00", "2017-04-23/23:59:59"])
+function demo_get_data(; trange = ["2017-03-23/00:00:00", "2017-03-23/23:59:59"])
     pyspedas.projects.omni.data(; trange)
     return DimArray(get_data("SYM_H"))
 end
