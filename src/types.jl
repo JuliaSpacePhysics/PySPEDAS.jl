@@ -15,17 +15,18 @@ Project(name) = Project(name, pynew(), Ref{Vector{Symbol}}())
 # This somehow could prevent the Segmentation fault, see also https://github.com/JuliaPy/PythonCall.jl/issues/586
 attributes(p::Project) = p.attributes[]
 
-struct TplotVariable{T, N} <: AbstractDataVariable{T, N}
+struct TplotVariable{T, N, MD} <: AbstractDataVariable{T, N}
     name::Symbol
     data::PyArray{T, N}
-    metadata::Dict{Any, Any}
+    metadata::MD
     py::Py
 end
 
 function TplotVariable(name)
     py = data_quants[String(name)]
-    data = PyArray(py.data; copy = false)
-    metadata = pyconvert(Dict{Any, Any}, py.attrs)
+    data = PyArray(py."data"; copy = false)
+    py_metadata = PyDict{String, PyDict{String, Any}}(py."attrs")
+    metadata = Dict{Any, Any}(k => v for (k, v) in py_metadata)
     return TplotVariable(Symbol(name), data, metadata, py)
 end
 
