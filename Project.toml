@@ -1,9 +1,10 @@
 name = "PySPEDAS"
 uuid = "668d2cef-03a7-4c36-a521-7d1c6ddc8846"
-authors = ["Beforerr <zzj956959688@gmail.com> and contributors"]
 version = "0.1.5"
+authors = ["Beforerr <zzj956959688@gmail.com> and contributors"]
 
 [deps]
+ConcreteStructs = "2569d6c7-a4a2-43d3-a901-331e8e4be471"
 DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
 NetCDF_jll = "7243133f-43d8-5620-bbf4-c2c921802cf3"
 PythonCall = "6099a3de-0909-46bc-b1f4-468b9a2dfc0d"
@@ -11,6 +12,7 @@ SpaceDataModel = "0b37b92c-f0c5-4a52-bd5c-390dec20857c"
 UnixTimes = "ab1a18e7-b408-4913-896c-624bb82ed7f4"
 
 [compat]
+ConcreteStructs = "0.2"
 DimensionalData = "0.29"
 NetCDF_jll = "401"
 PythonCall = "0.9.23"

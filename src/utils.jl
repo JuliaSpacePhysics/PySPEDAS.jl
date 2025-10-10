@@ -1,3 +1,5 @@
+is_datetime64_ns(py) = pyeq(Bool, py.dtype, @pyconst(np.dtype("datetime64[ns]")))
+
 """
     pyconvert_time(time)
 

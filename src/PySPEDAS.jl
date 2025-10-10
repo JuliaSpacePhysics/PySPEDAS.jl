@@ -7,6 +7,7 @@ using SpaceDataModel
 using SpaceDataModel: AbstractDataVariable
 import SpaceDataModel: times
 using UnixTimes: UnixTime
+using ConcreteStructs: @concrete
 
 export pyspedas
 export pytplot, get_data
@@ -23,23 +24,17 @@ const TnamesType = Union{AbstractArray, Tuple}
 
 const pyspedas = pynew()
 const pyns = pynew()
-const data_quants = pynew()
 const np = pynew()
 
 function __init__()
     PythonCall.pycopy!(np, pyimport("numpy"))
     PythonCall.pycopy!(pyspedas, pyimport("pyspedas"))
     PythonCall.pycopy!(pyns, pyimport("numpy").timedelta64(1, "ns"))
-    try
-        PythonCall.pycopy!(data_quants, pyimport("pyspedas.tplot_tools").data_quants)
-    catch
-        # for older versions
-        PythonCall.pycopy!(data_quants, pyimport("pytplot").data_quants)
-    end
-
     _init_projects()
     return
 end
+
+py_get_data(name) = @pyconst(pyspedas.get_data)(String(name); xarray = true)
 
 function _init_projects()
     for p in PROJECTS
@@ -60,11 +55,19 @@ pytplot(args...) = @pyconst(pyspedas.tplot)(args...)
 pytplot(tnames::TnamesType, args...) = @pyconst(pyspedas.tplot)(pylist(tnames), args...)
 
 """
-    get_data(name)::TplotVariable
+    get_data(name; collect = false)::TplotVariable
 
-Retrieve data from `pyspedas` by `name`.
+Retrieve data from `pyspedas` by `name`. If `collect` is true, the data will be collected into a Julia array.
 """
-get_data(name) = TplotVariable(name)
+function get_data(name; collect = false)
+    py = py_get_data(name)
+    py_data = PyArray(@py py.data; copy = false)
+    data = collect ? Base.collect(py_data) : py_data
+    py_metadata = PyDict{String, PyDict{String, Any}}(@py py.attrs)
+    metadata = Dict{Any, Any}(k => v for (k, v) in py_metadata)
+    dims = get_xarray_dims(py; collect)
+    return TplotVariable(name, data, dims, metadata, py)
+end
 
 function demo_get_data(; trange = ["2017-03-23/00:00:00", "2017-03-23/23:59:59"])
     pyspedas.projects.omni.data(; trange)
