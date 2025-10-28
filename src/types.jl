@@ -15,19 +15,12 @@ Project(name) = Project(name, pynew(), Ref{Vector{Symbol}}())
 # This somehow could prevent the Segmentation fault, see also https://github.com/JuliaPy/PythonCall.jl/issues/586
 attributes(p::Project) = p.attributes[]
 
-struct TplotVariable{T, N, MD} <: AbstractDataVariable{T, N}
-    name::Symbol
-    data::PyArray{T, N}
-    metadata::MD
+@concrete struct TplotVariable{T, N, A <: AbstractArray{T, N}} <: AbstractDataVariable{T, N}
+    name
+    data::A
+    dims
+    metadata
     py::Py
-end
-
-function TplotVariable(name)
-    py = data_quants[String(name)]
-    data = PyArray(py."data"; copy = false)
-    py_metadata = PyDict{String, PyDict{String, Any}}(py."attrs")
-    metadata = Dict{Any, Any}(k => v for (k, v) in py_metadata)
-    return TplotVariable(Symbol(name), data, metadata, py)
 end
 
 SpaceDataModel.times(var::TplotVariable) = pyconvert_time(var.py.time.data)
@@ -36,10 +29,10 @@ struct LoadFunction
     py::Py
 end
 
-function (f::LoadFunction)(args...; kwargs...)
+function (f::LoadFunction)(args...; collect = false, kwargs...)
     tvars_py = f.py(args...; kwargs...)
     tvars = Tuple(pyconvert(Vector{Symbol}, tvars_py))
-    return NamedTuple{tvars}(TplotVariable.(tvars))
+    return NamedTuple{tvars}(get_data.(tvars; collect))
 end
 
 # Allow calling methods on the Python module
