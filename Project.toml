@@ -1,6 +1,6 @@
 name = "PySPEDAS"
 uuid = "668d2cef-03a7-4c36-a521-7d1c6ddc8846"
-version = "0.1.6"
+version = "0.1.7"
 authors = ["Beforerr <zzj956959688@gmail.com> and contributors"]
 
 [deps]
