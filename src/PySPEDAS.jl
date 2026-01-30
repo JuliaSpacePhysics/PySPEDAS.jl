@@ -34,7 +34,7 @@ function __init__()
     return
 end
 
-py_get_data(name) = @pyconst(pyspedas.get_data)(String(name); xarray = true)
+py_get_data(name; kw...) = @pyconst(pyspedas.get_data)(String(name); xarray = true, kw...)
 
 function _init_projects()
     for p in PROJECTS
@@ -55,12 +55,12 @@ pytplot(args...) = @pyconst(pyspedas.tplot)(args...)
 pytplot(tnames::TnamesType, args...) = @pyconst(pyspedas.tplot)(pylist(tnames), args...)
 
 """
-    get_data(name; collect = false)::TplotVariable
+    get_data(name; collect = false, kw...)::TplotVariable
 
 Retrieve data from `pyspedas` by `name`. If `collect` is true, the data will be collected into a Julia array.
 """
-function get_data(name; collect = false)
-    py = py_get_data(name)
+function get_data(name; collect = false, kw...)
+    py = py_get_data(name; kw...)
     py_data = PyArray(@py py.data; copy = false)
     data = collect ? Base.collect(py_data) : py_data
     py_metadata = PyDict{String, PyDict{String, Any}}(@py py.attrs)
