@@ -8,8 +8,10 @@ using TestItems, TestItemRunner
 end
 
 @testitem "PySPEDAS.jl" begin
+    using PythonCall: Py
     using PySPEDAS.DimensionalData
     @test PySPEDAS.demo_get_data() isa DimArray
+    @test pyspedas.geopack isa Py
 end
 
 @testitem "Project initialization" begin

@@ -1,4 +1,5 @@
 [deps]
+certifi = ""
 NetCDF4 = ""
 
 [pip.deps]

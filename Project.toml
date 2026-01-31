@@ -3,6 +3,9 @@ uuid = "668d2cef-03a7-4c36-a521-7d1c6ddc8846"
 version = "0.1.7"
 authors = ["Beforerr <zzj956959688@gmail.com> and contributors"]
 
+[workspace]
+projects = ["test"]
+
 [deps]
 ConcreteStructs = "2569d6c7-a4a2-43d3-a901-331e8e4be471"
 DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
