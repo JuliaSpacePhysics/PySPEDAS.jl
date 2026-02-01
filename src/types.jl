@@ -1,3 +1,22 @@
+import PythonCall: pycopy!
+
+struct PythonModule{A}
+    mod::PythonCall.Py
+    autoimports::A
+end
+
+PythonModule(mod) = PythonModule(mod, ())
+
+PythonCall.pycopy!(dst::PythonModule, src) = pycopy!(dst.mod, src)
+PythonCall.Py(mod::PythonModule) = getfield(mod, :mod)
+
+@inline function Base.getproperty(m::PythonModule, name::Symbol)
+    name in fieldnames(PythonModule) && return getfield(m, name)
+    py = Py(m)
+    name in m.autoimports && return pyimport("$(py.__name__).$name")
+    return getproperty(py, name)
+end
+
 abstract type Module end
 
 function attributes end

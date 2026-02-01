@@ -22,7 +22,7 @@ using .Projects
 
 const TnamesType = Union{AbstractArray, Tuple}
 
-const pyspedas = pynew()
+const pyspedas = PythonModule(pynew(), (:geopack, :analysis, :particles))
 const pyns = pynew()
 const np = pynew()
 
@@ -30,11 +30,16 @@ function __init__()
     PythonCall.pycopy!(np, pyimport("numpy"))
     PythonCall.pycopy!(pyspedas, pyimport("pyspedas"))
     PythonCall.pycopy!(pyns, pyimport("numpy").timedelta64(1, "ns"))
+
+    # This is needed for geopack to load IGRF coefficients
+    certifi = pyimport("certifi")
+    ENV["SSL_CERT_FILE"] = pyconvert(String, certifi.where())
     _init_projects()
     return
 end
 
 py_get_data(name; kw...) = @pyconst(pyspedas.get_data)(String(name); xarray = true, kw...)
+py_get_data(name::Py; kw...) = @pyconst(pyspedas.get_data)(name; xarray = true, kw...)
 
 function _init_projects()
     for p in PROJECTS
