@@ -4,9 +4,7 @@ const PROJECTS = [:ace, :akebono, :barrel, :cluster, :cnofs, :csswe, :de2, :dsco
 
 is_public_attribute(name) = !startswith(string(name), "__")
 
-"""
-Filter out Python dunder attributes (those that start with "__")
-"""
+# Filter out Python dunder attributes (those that start with "__")
 function projects()
     filter(is_public_attribute, propertynames(pyspedas.projects)) |> sort
 end
