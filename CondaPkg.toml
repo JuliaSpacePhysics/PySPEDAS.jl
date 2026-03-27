@@ -1,4 +1,5 @@
 [deps]
+python-gil = ""
 certifi = ""
 NetCDF4 = ""
 

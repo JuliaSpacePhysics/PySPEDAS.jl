@@ -16,7 +16,7 @@ UnixTimes = "ab1a18e7-b408-4913-896c-624bb82ed7f4"
 
 [compat]
 ConcreteStructs = "0.2"
-DimensionalData = "0.29"
+DimensionalData = "0.29, 0.30"
 NetCDF_jll = "401"
 PythonCall = "0.9.23"
 SpaceDataModel = "0.1.8, 0.2"
