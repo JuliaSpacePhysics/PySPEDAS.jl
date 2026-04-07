@@ -2,3 +2,4 @@ Manifest.toml
 .CondaPkg
 themis_data
 omni_data
+.claude/settings.local.json
