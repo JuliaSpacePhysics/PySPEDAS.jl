@@ -12,6 +12,9 @@ end
     using PySPEDAS.DimensionalData
     @test PySPEDAS.demo_get_data() isa DimArray
     @test pyspedas.geopack isa Py
+
+    using PySPEDAS.Projects
+    @test themis.fgm(["2020-04-20/06:00", "2020-04-20/08:00"], time_clip=true, probe="d")[1] isa TplotVariable
 end
 
 @testitem "Project initialization" begin
