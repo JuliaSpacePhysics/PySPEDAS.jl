@@ -11,7 +11,6 @@ Load and plot THEMIS FGM data.
 ```julia
 using Pkg; Pkg.add("PySPEDAS")
 using PySPEDAS
-using DimensionalData
 
 trange=["2007-03-23", "2007-03-24"]
 # Load THEMIS FGM data for probe A
@@ -25,6 +24,9 @@ get_data("tha_fgl_dsl")
 # Plot the 'tha_fgl_dsl' variable using PySPEDAS's `tplot` function (`matplotlib`)
 pytplot("tha_fgl_dsl")
 ```
+
+`DimensionalData.jl` support is optional. If it is loaded, `TplotVariable`
+can be converted with `DimArray(get_data("tha_fgl_dsl"))`.
 
 You can load projects into scope for quick access:
 
