@@ -4,7 +4,7 @@ version = "0.1.8"
 authors = ["Beforerr <zzj956959688@gmail.com> and contributors"]
 
 [workspace]
-projects = ["test"]
+projects = ["test", "benchmark"]
 
 [deps]
 ConcreteStructs = "2569d6c7-a4a2-43d3-a901-331e8e4be471"
