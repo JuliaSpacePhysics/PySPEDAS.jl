@@ -12,11 +12,13 @@ using ConcreteStructs: @concrete
 export pyspedas
 export pytplot, get_data
 export Project, TplotVariable
+export PySPEDASSchema
 
 include("types.jl")
 include("utils.jl")
 include("projects.jl")
-include("DimensionalData.jl")
+include("schema.jl")
+include("dimensions.jl")
 
 using .Projects
 
@@ -60,23 +62,20 @@ pytplot(args...) = @pyconst(pyspedas.tplot)(args...)
 pytplot(tnames::TnamesType, args...) = @pyconst(pyspedas.tplot)(pylist(tnames), args...)
 
 """
-    get_data(name; collect = false, kw...)::TplotVariable
+    get_data(name; kw...)::XArrayDataArray
 
-Retrieve data from `pyspedas` by `name`. If `collect` is true, the data will be collected into a Julia array.
+Retrieve data from `pyspedas` by `name`.
 """
-function get_data(name; collect = false, kw...)
+function get_data(name; schema = PySPEDASSchema(), kw...)
     py = py_get_data(name; kw...)
-    py_data = PyArray(@py py.data; copy = false)
-    data = collect ? Base.collect(py_data) : py_data
-    py_metadata = PyDict{String, PyDict{String, Any}}(@py py.attrs)
-    metadata = Dict{Any, Any}(k => v for (k, v) in py_metadata)
-    dims = get_xarray_dims(py; collect)
-    return TplotVariable(name, data, dims, metadata, py)
+    py_attrs = PyDict{String, Any}(@py py.attrs)
+    attrs = SchemaDict(schema, py_attrs)
+    return XArrayDataArray(py; name, attrs)
 end
 
 function demo_get_data(; trange = ["2017-03-23/00:00:00", "2017-03-23/23:59:59"])
     pyspedas.projects.omni.data(; trange)
-    return DimArray(get_data("SYM_H"))
+    return get_data("SYM_H")
 end
 
 function demo(; trange = ["2020-04-20/06:00", "2020-04-20/08:00"])

@@ -34,24 +34,40 @@ Project(name) = Project(name, pynew(), Ref{Vector{Symbol}}())
 # This somehow could prevent the Segmentation fault, see also https://github.com/JuliaPy/PythonCall.jl/issues/586
 attributes(p::Project) = p.attributes[]
 
-@concrete struct TplotVariable{T, N, A <: AbstractArray{T, N}} <: AbstractDataVariable{T, N}
+@concrete struct XArrayDataArray{T, N, A <: AbstractArray{T, N}} <: AbstractDataVariable{T, N}
     name
     data::A
-    dims
-    metadata
+    attrs
     py::Py
 end
 
+function XArrayDataArray(py; name = nothing, attrs = nothing)
+    name = @something name pyconvert(Any, @py py.name) ""
+    data = _xarray_values(py)
+    attrs = @something attrs PyDict(@py py.attrs)
+    return XArrayDataArray(name, data, attrs, py)
+end
+
+@inline function Base.getproperty(var::XArrayDataArray, s::Symbol)
+    s in fieldnames(XArrayDataArray) && return getfield(var, s)
+    s == :metadata && return getmeta(var)
+    s == :dims && return dimname(var)
+    return getproperty(var.py, s)
+end
+
+const TplotVariable = XArrayDataArray
+
+SpaceDataModel.getmeta(var::XArrayDataArray) = var.attrs
 SpaceDataModel.times(var::TplotVariable) = pyconvert_time(var.py.time.data)
 
 struct LoadFunction
     py::Py
 end
 
-function (f::LoadFunction)(args...; collect = false, kwargs...)
+function (f::LoadFunction)(args...; kwargs...)
     tvars_py = f.py(args...; kwargs...)
     tvars = Tuple(pyconvert(Vector{Symbol}, tvars_py))
-    return NamedTuple{tvars}(get_data.(tvars; collect))
+    return NamedTuple{tvars}(get_data.(tvars))
 end
 
 # Allow calling methods on the Python module
@@ -68,6 +84,6 @@ end
 Base.show(io::IO, p::Project) = print(io, "SPEDAS Project: $(p.name)")
 Base.show(io::IO, var::TplotVariable) = print(io, var.py.data)
 function Base.show(io::IO, m::MIME"text/plain", var::TplotVariable)
-    println(io, "Tplot Variable: $(var.name)")
+    println(io, "XArray DataArray: $(var.name)")
     return show(io, m, var.py)
 end

@@ -3,3 +3,4 @@ Manifest.toml
 themis_data
 omni_data
 .claude/settings.local.json
+*.cdf
