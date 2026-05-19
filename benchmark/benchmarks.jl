@@ -9,3 +9,4 @@ PySPEDAS.pyspedas.projects.omni.data(; trange = ["2017-03-23/00:00:00", "2017-03
 SUITE["get_data"] = @benchmarkable get_data("SYM_H")
 SUITE["get_data (collect)"] = @benchmarkable collect(get_data("SYM_H"))
 SUITE["DimArray"] = @benchmarkable DimArray(var) setup = (var = get_data("SYM_H"))
+SUITE["DimArray (direct)"] = @benchmarkable DimArray(get_data("SYM_H"))
