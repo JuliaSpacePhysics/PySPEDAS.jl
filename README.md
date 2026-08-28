@@ -13,20 +13,16 @@ using Pkg; Pkg.add("PySPEDAS")
 using PySPEDAS
 
 trange=["2007-03-23", "2007-03-24"]
-# Load THEMIS FGM data for probe A
+# Load THEMIS FGM data for probe A and return loaded variable names
 fgm_vars = pyspedas.projects.themis.fgm(probe='a', trange=trange)
-# Print the list of tplot variables just loaded
-println(fgm_vars)
 
-# Retrieve the 'tha_fgl_dsl' variable
-get_data("tha_fgl_dsl")
+var = get_data("tha_fgl_dsl")
 
 # Plot the 'tha_fgl_dsl' variable using PySPEDAS's `tplot` function (`matplotlib`)
 pytplot("tha_fgl_dsl")
 ```
 
-`DimensionalData.jl` support is optional. If it is loaded, `TplotVariable`
-can be converted with `DimArray(get_data("tha_fgl_dsl"))`.
+If `DimensionalData.jl` is loaded, variables can be converted with `DimArray(var)`.
 
 You can load projects into scope for quick access:
 
