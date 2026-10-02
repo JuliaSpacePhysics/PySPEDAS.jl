@@ -6,7 +6,8 @@ using PythonCall: pynew
 using SpaceDataModel
 using SpaceDataModel: AbstractDataVariable
 import SpaceDataModel: times
-using UnixTimes: UnixTime
+using Durations: Timestamp
+using Dates: Nanosecond
 using ConcreteStructs: @concrete
 
 export pyspedas

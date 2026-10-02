@@ -10,5 +10,5 @@ Much faster than `pyconvert(Array, time)`
 function pyconvert_time(times)
     @assert is_datetime64_ns(times)
     py_ns = PyArray{Int64, 1, false, true, Int64}(times."view"("i8"), copy = false)
-    return length(py_ns) == 0 ? UnixTime[] : reinterpret(UnixTime, py_ns)
+    return length(py_ns) == 0 ? Timestamp{Nanosecond}[] : reinterpret(Timestamp{Nanosecond}, py_ns)
 end
