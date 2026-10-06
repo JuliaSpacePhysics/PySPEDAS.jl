@@ -13,7 +13,7 @@ struct PySPEDASSchema <: MetadataSchema end
 _get(x, key) = isnothing(x) ? nothing : get(x, key, nothing)
 
 cdf(x) = _get(getmeta(x), "CDF")
-vatt(x) = _get(cdf(x), "VATT")::PyDict{Any, Any}
+vatt(x) = _get(cdf(x), "VATT")
 
 struct Path{Ks}
     keys::Ks
