@@ -51,7 +51,7 @@ end
 @inline function Base.getproperty(var::XArrayDataArray, s::Symbol)
     s in fieldnames(XArrayDataArray) && return getfield(var, s)
     s == :metadata && return getmeta(var)
-    s == :dims && return dimname(var)
+    s == :dims && return dimnames(var)
     return getproperty(var.py, s)
 end
 

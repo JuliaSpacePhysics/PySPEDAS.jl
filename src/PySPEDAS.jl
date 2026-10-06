@@ -23,16 +23,12 @@ include("dimensions.jl")
 
 using .Projects
 
-const TnamesType = Union{AbstractArray, Tuple}
-
 const pyspedas = PythonModule(pynew(), (:geopack, :analysis, :particles))
-const pyns = pynew()
 const np = pynew()
 
 function __init__()
     PythonCall.pycopy!(np, pyimport("numpy"))
     PythonCall.pycopy!(pyspedas, pyimport("pyspedas"))
-    PythonCall.pycopy!(pyns, pyimport("numpy").timedelta64(1, "ns"))
 
     # This is needed for geopack to load IGRF coefficients
     certifi = pyimport("certifi")
@@ -60,7 +56,7 @@ function _init_projects()
 end
 
 pytplot(args...) = @pyconst(pyspedas.tplot)(args...)
-pytplot(tnames::TnamesType, args...) = @pyconst(pyspedas.tplot)(pylist(tnames), args...)
+pytplot(tnames::Union{AbstractArray, Tuple}, args...) = @pyconst(pyspedas.tplot)(pylist(tnames), args...)
 
 """
     get_data(name; kw...)::XArrayDataArray

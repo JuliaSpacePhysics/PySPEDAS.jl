@@ -19,12 +19,7 @@ function SpaceDataModel.dim(var::XArrayDataArray, i::Integer)
     return isnothing(coord) ? axes(var, i) : coord
 end
 
-function dimnames(var::XArrayDataArray, i::Integer)
-    py = var.py
-    return pyconvert(String, @py(py.dims)[i - 1])
-end
-
-function dimname(var::XArrayDataArray)
+function dimnames(var::XArrayDataArray)
     py = var.py
     T = NTuple{ndims(var), String}
     return pyconvert(T, @py py.dims)
