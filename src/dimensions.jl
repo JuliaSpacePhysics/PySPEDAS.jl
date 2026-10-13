@@ -14,7 +14,7 @@ function coordinate(var::XArrayDataArray, name)
     return XArrayDataArray(@py py.coords[name])
 end
 
-function SpaceDataModel.dim(var::XArrayDataArray, i::Integer)
+function SpaceDataModel.dims(var::XArrayDataArray, i::Integer)
     coord = coordinate(var, i)
     return isnothing(coord) ? axes(var, i) : coord
 end

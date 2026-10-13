@@ -3,11 +3,12 @@ module PySPEDASDimensionalDataExt
 using DimensionalData
 import DimensionalData: DimArray, dims
 using PySPEDAS: XArrayDataArray
-using SpaceDataModel: getmeta, dim
+using SpaceDataModel: getmeta
+import SpaceDataModel as SDM
 
 # DimensionalData.dims only support 1D dimensions
 function DimensionalData.dims(var::XArrayDataArray, i::Int)
-    dimvar = dim(var, i)
+    dimvar = SDM.dims(var, i)
     return Dim{Symbol(var.dims[i])}(length(dimvar) == size(var, i) ? dimvar : axes(dimvar, i))
 end
 
