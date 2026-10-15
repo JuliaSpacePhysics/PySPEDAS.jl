@@ -13,10 +13,12 @@ concurrency:
   cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 jobs:
   test:
-    uses: JuliaSpacePhysics/actions/.github/workflows/julia-ci.yml@main
+    uses: JuliaSpacePhysics/actions/.github/workflows/julia-ci.yml@data-cache
     with:
       versions: '["1", "pre"]'
       os: '["ubuntu-latest", "windows-latest", "macos-latest"]'
+      env: SPEDAS_DATA_DIR=data
+      data-cache: test/data
     permissions:
       actions: write
       contents: read
