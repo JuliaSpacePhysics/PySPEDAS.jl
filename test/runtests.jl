@@ -2,12 +2,18 @@ using TestItems, TestItemRunner
 
 @run_package_tests filter = ti -> !(:skipci in ti.tags)
 
+# pyspedas defaults to Berkeley's THEMIS server, which has outages; SPDF mirrors the same files.
+@testsnippet ThemisSPDF begin
+using PySPEDAS: pyspedas
+pyspedas.projects.themis.config.CONFIG["remote_data_dir"] = "https://spdf.gsfc.nasa.gov/pub/data/themis/"
+end
+
 @testitem "Aqua" begin
     using Aqua
     Aqua.test_all(PySPEDAS)
 end
 
-@testitem "PySPEDAS.jl" begin
+@testitem "PySPEDAS.jl" setup = [ThemisSPDF] begin
     using PySPEDAS: XArrayDataArray
 
     var = PySPEDAS.demo_get_data()
@@ -53,7 +59,7 @@ end
     @test attrs[:unit] == "nT"
 end
 
-@testitem "PySPEDASSchema (2D, depend_1)" begin
+@testitem "PySPEDASSchema (2D, depend_1)" setup = [ThemisSPDF] begin
     using PySPEDAS: PySPEDASSchema, get_data, pyspedas
     using SpaceDataModel: get_schema
 
