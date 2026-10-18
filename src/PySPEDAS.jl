@@ -4,11 +4,9 @@ using NetCDF_jll
 using PythonCall
 using PythonCall: pynew
 using SpaceDataModel
-using SpaceDataModel: AbstractDataVariable
-import SpaceDataModel: times
+using SpaceDataModel: AbstractDataVariable, DataVariable, getmeta, name, dims, tdimnum, coords
 using Durations: Timestamp
 using Dates: Nanosecond
-using ConcreteStructs: @concrete
 
 export pyspedas
 export pytplot, get_data
