@@ -15,12 +15,16 @@ end
 
 @testitem "PySPEDAS.jl" setup = [ThemisSPDF] begin
     using PySPEDAS: XArrayDataArray
+    using SpaceDataModel: dims, times
 
     var = PySPEDAS.demo_get_data()
     @test var.dims == ("time",)
-    coord = PySPEDAS.coordinate(var, "time")
-    @test coord isa XArrayDataArray
-    @test coord.dims == ("time",)
+    @test times(var) == PySPEDAS.pyconvert_time(var.py.time.data)
+    @test dims(var, "time") == times(var)
+    @test parent(var[2:3]) == parent(var)[2:3]
+    @test times(var[2:3]) == times(var)[2:3]
+    index = XArrayDataArray(var.py.coords["time"])
+    @test times(index[2:3]) == parent(index)[2:3] == times(var)[2:3]
 
     using PySPEDAS.Projects
     @test themis.fgm(["2020-04-20/06:00", "2020-04-20/08:00"], time_clip = true, probe = "d")[1] isa XArrayDataArray
@@ -81,6 +85,8 @@ end
 @testitem "MMS FPI multidimensional data" begin
     using DimensionalData
     using PySPEDAS: get_data, pyspedas
+    using PythonCall: pyconvert
+    using SpaceDataModel: dims, times
 
     pyspedas.projects.mms.fpi(;
         trange = ["2015-10-16/04:00", "2015-10-16/04:10"],
@@ -90,7 +96,13 @@ end
     spectr = get_data("mms1_des_energyspectr_omni_fast")
     @test spectr.dims == ("time", "v_dim")
     @test size(spectr, 2) == 32
-    @test PySPEDAS.coordinate(spectr, "spec_bins").dims == ("time", "v_dim")
+    bins = dims(spectr, 2)
+    @test size(bins) == size(spectr)
+    @test bins == pyconvert(Array, spectr.py.spec_bins.values)
+    @test times(bins) == times(spectr)
+    sub = dims(spectr[2:3, 4:5], 2)
+    @test sub == bins[2:3, 4:5]
+    @test times(sub) == times(spectr)[2:3]
     @test DimArray(spectr) isa DimArray
 
     tensor = get_data("mms1_des_temptensor_gse_fast")

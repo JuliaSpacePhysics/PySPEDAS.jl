@@ -34,31 +34,36 @@ Project(name) = Project(name, pynew(), Ref{Vector{Symbol}}())
 # This somehow could prevent the Segmentation fault, see also https://github.com/JuliaPy/PythonCall.jl/issues/586
 attributes(p::Project) = p.attributes[]
 
-@concrete struct XArrayDataArray{T, N, A <: AbstractArray{T, N}} <: AbstractDataVariable{T, N}
-    name
-    data::A
-    attrs
+# `py` is read once at construction: Julia-side queries never call Python. A coordinate is a `DataVariable` of its xarray `Variable`.
+struct XArrayDataArray{T, N, V <: DataVariable{T, N}} <: AbstractDataVariable{T, N}
+    dv::V
     py::Py
 end
 
 function XArrayDataArray(py; name = nothing, attrs = nothing)
     name = @something name pyconvert(Any, @py py.name) ""
-    data = _xarray_values(py)
-    attrs = @something attrs PyDict(@py py.attrs)
-    return XArrayDataArray(name, data, attrs, py)
+    attrs = @something attrs PyDict{String, Any}(@py py.attrs)
+    return XArrayDataArray(_datavariable(py, name, attrs), py)
 end
+
+SpaceDataModel.DataVariable(var::XArrayDataArray) = getfield(var, :dv)
+Base.parent(var::XArrayDataArray) = parent(DataVariable(var))
+SpaceDataModel.getmeta(var::XArrayDataArray) = getmeta(DataVariable(var))
+SpaceDataModel.name(var::XArrayDataArray) = name(DataVariable(var))
+SpaceDataModel.dims(var::XArrayDataArray, i::Integer) = dims(DataVariable(var), i)
+SpaceDataModel.tdimnum(var::XArrayDataArray) = tdimnum(DataVariable(var))
+SpaceDataModel.coords(var::XArrayDataArray) = coords(DataVariable(var))
 
 @inline function Base.getproperty(var::XArrayDataArray, s::Symbol)
     s in fieldnames(XArrayDataArray) && return getfield(var, s)
-    s == :metadata && return getmeta(var)
+    s == :data && return parent(var)
+    s == :name && return name(var)
+    s in (:attrs, :metadata) && return getmeta(var)
     s == :dims && return dimnames(var)
     return getproperty(var.py, s)
 end
 
 const TplotVariable = XArrayDataArray
-
-SpaceDataModel.getmeta(var::XArrayDataArray) = var.attrs
-SpaceDataModel.times(var::TplotVariable) = pyconvert_time(var.py.time.data)
 
 struct LoadFunction
     py::Py

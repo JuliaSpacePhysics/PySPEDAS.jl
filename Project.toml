@@ -7,7 +7,6 @@ authors = ["Beforerr <zzj956959688@gmail.com> and contributors"]
 projects = ["test", "benchmark"]
 
 [deps]
-ConcreteStructs = "2569d6c7-a4a2-43d3-a901-331e8e4be471"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Durations = "41ac09f5-0a95-4810-aa18-c88bf48ee130"
 NetCDF_jll = "7243133f-43d8-5620-bbf4-c2c921802cf3"
@@ -21,11 +20,10 @@ DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
 PySPEDASDimensionalDataExt = "DimensionalData"
 
 [compat]
-ConcreteStructs = "0.2"
 Dates = "1"
 DimensionalData = "0.29, 0.30"
 Durations = "1.4"
 NetCDF_jll = "401"
 PythonCall = "0.9.23"
-SpaceDataModel = "0.4, 0.5"
+SpaceDataModel = "0.6"
 julia = "1.10"
