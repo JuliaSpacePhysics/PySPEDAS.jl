@@ -2,7 +2,9 @@
 # Unpin once h5py ships cp315 wheels (else pip builds from source, needing pkg-config): https://pypi.org/project/h5py/#files
 python = ">=3.10,<3.15"
 python-gil = ""
-certifi = ""
+# certifi version 2026.10.18 removes emSign as a trusted provider.  This causes errors
+# accessing the UCLA elfin site.
+certifi = "<2026.10.18"
 NetCDF4 = ""
 
 [pip.deps]
