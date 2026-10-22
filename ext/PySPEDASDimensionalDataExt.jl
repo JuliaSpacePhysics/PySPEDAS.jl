@@ -8,7 +8,7 @@ import SpaceDataModel as SDM
 
 # DimensionalData.dims only support 1D dimensions
 function DimensionalData.dims(var::XArrayDataArray, i::Int)
-    dimvar = SDM.dims(var, i)
+    dimvar = @something SDM.dims(var, i) axes(var, i)
     return Dim{Symbol(var.dims[i])}(length(dimvar) == size(var, i) ? dimvar : axes(dimvar, i))
 end
 
